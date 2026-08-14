@@ -1363,12 +1363,3 @@ img {
   display: block;
   max-width: 100%;
 }
-/* Hide hero feature popup badges */
-.hero-badges,
-.hero-features,
-.feature-badges,
-.trust-badges,
-.hero .badges,
-.hero-section .badges {
-  display: none !important;
-}
