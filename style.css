@@ -199,6 +199,26 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   padding: 0 var(--container-padding);
 }
 
+/* ==========================================================================
+   SITE-WIDE BACKGROUND VIDEO
+   (was referenced in HTML as .bg-video-overlay/.bg-video but never styled —
+   caused the video to render unstyled at native size instead of covering
+   the viewport, pushing the rest of the page into a squeezed layout)
+   ========================================================================== */
+.bg-video-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  overflow: hidden;
+  background: var(--brand-forest-deep);
+}
+.bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.18;
+}
+
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0;
   margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0);
