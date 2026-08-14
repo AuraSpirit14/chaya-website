@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Chaya & Co. — Artisanal Indian street food made fresh to order. Pani puri, chaat, and beverages. Takeaway and delivery across Rotorua.">
+  <meta name="theme-color" content="#FDF9F3">
+  <title>The Chaya & Co. | Artisanal Indian Street Food, New Zealand</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Fonts -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap"></noscript>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style-upgraded.css?v1">
+  <link rel="stylesheet" href="style.css?v5"> <!-- Keep for any legacy styles not yet migrated -->
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🥟%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+  <!-- Announcement Bar -->
+  <div class="announce-bar" role="status" aria-live="polite" id="announce-bar">
+    <div class="announce-bar__content">
+      <div class="announce-bar__marquee" aria-hidden="true">
+        <span class="announce-bar__item"><svg class="announce-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4"/><path d="m8 14 4 4 4-4"/><path d="M8 10h8"/><circle cx="12" cy="12" r="10"/></svg>Today's special: Sev-Puri · Takeaway ready in ~20 min</span>
+        <span class="announce-bar__item"><svg class="announce-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Delivering across central Rotorua</span>
+        <span class="announce-bar__item"><svg class="announce-bar__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 18v-8"/><path d="M3 22V12a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 12v10"/></svg>Open Mon–Sun 3:30pm–8pm · Closed Saturday</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Video Background -->
+  <div class="bg-video-overlay" aria-hidden="true">
+    <video class="bg-video" autoplay muted loop playsinline poster="./photos/bg.png" aria-hidden="true">
+      <source src="./photos/video.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header" id="site-header" role="banner">
+    <div class="wrap header-row">
+      <a href="#top" class="brand" id="brand-link" aria-label="The Chaya & Co. — Home">
+        <img src="./photos/logo.png" alt="" class="brand__logo brand-logo hidden" id="brand-logo" loading="lazy">
+        <span class="brand__text" id="brand-text">Bangarpet Chats</span>
+      </a>
+
+      <nav class="main-nav" id="main-nav" aria-label="Main navigation">
+        <a href="#menu" class="main-nav__link">Menu</a>
+        <a href="#story" class="main-nav__link">Story</a>
+        <a href="#delivery" class="main-nav__link">Delivery</a>
+        <a href="#find-us" class="main-nav__link">Find Us</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="https://wa.me/64211234567" target="_blank" rel="noopener noreferrer" class="whatsapp-quick" id="header-whatsapp-link" aria-label="Message us on WhatsApp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span>WhatsApp</span>
+        </a>
+
+        <button class="cart-btn" id="open-cart" aria-label="Open cart" aria-expanded="false" aria-controls="cart-drawer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+          <span class="cart-badge hidden" id="cart-badge" aria-live="polite">0</span>
+        </button>
+
+        <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
+          <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <svg class="close-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav Drawer -->
+  <div class="mobile-nav" id="mobile-nav" role="navigation" aria-label="Mobile menu">
+    <button class="mobile-nav__close btn btn--icon" id="mobile-nav-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="mobile-nav__links" style="display:flex;flex-direction:column;gap:var(--space-4);">
+      <a href="#menu" class="mobile-nav__link">Menu</a>
+      <a href="#story" class="mobile-nav__link">Our Story</a>
+      <a href="#delivery" class="mobile-nav__link">Delivery & Takeaway</a>
+      <a href="#find-us" class="mobile-nav__link">Find Us</a>
+    </div>
+    <div class="mobile-nav__cta">
+      <a href="https://wa.me/64211234567" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--full">Order on WhatsApp</a>
+      <a href="tel:0211234567" class="btn btn--outline--dark btn--full">Call Us</a>
+    </div>
+  </div>
+
+  <main id="top">
+    <!-- HERO SECTION -->
+    <section class="hero reveal" id="section-hero" aria-labelledby="hero-headline">
+      <div class="hero__bg">
+        <video class="bg-video" autoplay muted loop playsinline poster="./photos/bg.png" aria-hidden="true">
+          <source src="./photos/video.mp4" type="video/mp4">
+        </video>
+        <div class="hero__bg-overlay"></div>
+      </div>
+
+      <div class="wrap hero__inner">
+        <div class="hero__content">
+          <p class="eyebrow hero__eyebrow" id="hero-eyebrow">Artisanal Bites · New Zealand</p>
+          <h1 class="hero__headline" id="hero-headline">Street food, treated<br>like it deserves a menu card.</h1>
+          <p class="hero__copy" id="hero-copy">Every puri is filled to order. Every chutney is made the same morning it's served. Order ahead for Takeaway, or have it delivered across Rotorua.</p>
+          <div class="hero__ctas">
+            <a href="#menu" class="btn btn--primary btn--lg" id="hero-cta1">Order Now</a>
+            <a href="#menu" class="btn btn--outline btn--lg" id="hero-cta2">View Menu</a>
+          </div>
+        </div>
+
+        <div class="hero__visual">
+          <img src="./photos/Staring.png" alt="Signature Pani Puri plated on marble" id="hero-image" loading="eager" fetchpriority="high">
+          <div class="hero__floating-badge" aria-hidden="true">
+            <span class="hero__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Fresh Daily</span>
+            <span class="hero__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Made to Order</span>
+            <span class="hero__badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 18v-8"/></svg>Takeaway & Delivery</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIGNATURE / BESTSELLERS STRIP -->
+    <section class="signature reveal" id="section-signature" aria-labelledby="signature-eyebrow">
+      <div class="wrap">
+        <header class="signature__header">
+          <p class="eyebrow eyebrow--center" id="signature-eyebrow">Bestsellers</p>
+        </header>
+        <div class="signature__row" id="signature-row">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU SECTION -->
+    <section class="menu-section reveal" id="menu" aria-labelledby="menu-title">
+      <div class="wrap">
+        <header class="menu__header">
+          <p class="eyebrow eyebrow--center" id="menu-eyebrow">The Menu</p>
+          <h2 class="section-title section-title--center" id="menu-title">Order Ahead</h2>
+          <blockquote class="menu__quote" id="menu-quote">
+            "Our masala pani is steeped fresh every morning — no shortcuts, no concentrate."
+            <footer>— Kanha, Founder</footer>
+          </blockquote>
+        </header>
+
+        <div class="category-tabs" id="category-tabs" role="tablist" aria-label="Menu categories">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="menu-grid" id="menu-grid" role="list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- STORY SECTION -->
+    <section class="story reveal" id="story" aria-labelledby="story-headline">
+      <div class="wrap">
+        <div class="story__grid">
+          <div class="story__image">
+            <img src="./photos/ourstory.png" alt="Hands plating fresh chaat in the kitchen" id="story-image" loading="lazy">
+          </div>
+          <div class="story__content">
+            <p class="eyebrow" id="story-eyebrow">Our Story</p>
+            <h2 class="story__headline" id="story-headline">From a Bangarpet Kolar street cart to a Rotorua kitchen</h2>
+            <p class="story__text" id="story-para1">The Chaya & Co. began as a single market stall in 2005, built on recipes carried over from Kolar. Twenty-one years on, we're still a small, family-run kitchen — everything made fresh, nothing sitting under a heat lamp.</p>
+            <p class="story__text" id="story-para2">We're proud to be a New Zealand based business, serving our community one order at a time.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DELIVERY & TAKEAWAY INFO -->
+    <section class="delivery-info reveal" id="delivery" aria-labelledby="delivery-title">
+      <div class="wrap">
+        <header>
+          <p class="eyebrow eyebrow--center" id="delivery-eyebrow">Delivery &amp; Takeaway</p>
+          <h2 class="section-title section-title--center" id="delivery-title">How to Order</h2>
+        </header>
+        <div class="info-grid" id="delivery-cards">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- FIND US -->
+    <section class="find-us reveal" id="find-us" aria-labelledby="findus-headline">
+      <div class="wrap">
+        <div class="find-us__grid">
+          <div class="find-us__info">
+            <p class="eyebrow" id="findus-eyebrow">Find Us</p>
+            <h2 class="find-us__headline" id="findus-headline">The Chaya &amp; Co.</h2>
+            <div class="find-us__detail" id="findus-line1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>44 Cuba Street, Te Aro, Rotorua 6011</span>
+            </div>
+            <div class="find-us__detail" id="findus-line2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              <span>Mon–Sun, 3:30pm–8:00pm · Closed Saturday</span>
+            </div>
+            <div class="find-us__detail" id="findus-line3">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>021 123 4567 · help@thechayaandco.nz</span>
+            </div>
+            <div class="find-us__actions">
+              <a href="https://www.google.com/maps/place/44+Cuba+Street,+Te+Aro,+Rotorua+6011" target="_blank" rel="noopener noreferrer" class="btn btn--primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Get Directions
+              </a>
+              <a href="tel:0211234567" class="btn btn--outline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                Call Us
+              </a>
+            </div>
+          </div>
+          <div class="find-us__map">
+            <iframe id="findus-map-link" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434501234!2d176.2355002!3d-38.1518837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d6c27400b996f21%3A0x37cf17543a4d4322!2s44%20Cuba%20St%2C%20Rotorua%206011!5e0!3m2!1sen!2snz!4v1691800000000!5m2!1sen!2snz" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="The Chaya & Co. location on Google Maps"></iframe>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <p class="footer__brand" id="footer-brand">The Chaya &amp; Co.</p>
+          <p class="footer__tagline" id="footer-tagline">This is a New Zealand based business.</p>
+          <address class="footer__contact" id="footer-address">
+            44 Cuba Street, Te Aro, Rotorua 6011
+          </address>
+          <address class="footer__contact" id="footer-contact">
+            <a href="tel:0211234567">021 123 4567</a> ·
+            <a href="mailto:hello@thechayaandco.nz">hello@thechayaandco.nz</a>
+          </address>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer__title">Policies</p>
+          <button class="footer-link" data-policy="delivery">Delivery Policy</button>
+          <button class="footer-link" data-policy="refunds">Refunds &amp; Cancellations</button>
+          <button class="footer-link" data-policy="privacy">Privacy Policy</button>
+          <button class="footer-link" data-policy="terms">Terms &amp; Conditions</button>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer__title">Payment</p>
+          <div class="payment-chips">
+            <span class="payment-chip">Cash</span>
+            <span class="payment-chip">Card</span>
+            <span class="payment-chip">WhatsApp Order</span>
+          </div>
+          <a href="https://wa.me/64211234567" target="_blank" rel="noopener noreferrer" class="footer__whatsapp" id="footer-whatsapp-link">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+            Message us on WhatsApp
+          </a>
+        </div>
+
+        <div class="footer-col">
+          <p class="footer__title">Connect</p>
+          <p class="footer__contact">Follow our journey</p>
+          <div style="display:flex;gap:var(--space-3);margin-top:var(--space-3);">
+            <a href="#" class="footer-link" aria-label="Instagram" style="padding:var(--space-2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>
+            <a href="#" class="footer-link" aria-label="Facebook" style="padding:var(--space-2);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-3V7a1 1 0 0 1 1-1h3z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom" id="footer-copyright">
+        © 2026 The Chaya &amp; Co. All prices in NZD.
+      </div>
+    </div>
+  </footer>
+
+  <!-- MOBILE STICKY BAR -->
+  <div class="mobile-sticky-bar" id="mobile-sticky-bar" role="status" aria-live="polite" aria-hidden="true">
+    <span class="mobile-sticky-bar__summary" id="mobile-cart-summary">0 items · NZD 0.00</span>
+    <button class="btn btn--primary btn--sm mobile-sticky-bar__btn" id="mobile-cart-btn">View Cart</button>
+  </div>
+
+  <!-- CART DRAWER -->
+  <div class="drawer-overlay" id="drawer-overlay" aria-hidden="true"></div>
+  <aside class="drawer cart-drawer" id="cart-drawer" role="dialog" aria-label="Shopping cart" aria-modal="true">
+    <header class="drawer__header">
+      <h3 class="drawer__title">Your Order</h3>
+      <button class="drawer__close" id="close-cart" aria-label="Close cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="drawer__body">
+      <div class="cart-items" id="cart-items" role="list" aria-label="Cart items"></div>
+      <div class="cart-empty hidden" id="cart-empty">Your cart is empty. Add something delicious from the menu.</div>
+    </div>
+    <div class="cart-totals" id="cart-totals" hidden>
+      <div class="totals-row"><span class="totals-row__label">Subtotal</span><span class="totals-row__value" id="cart-subtotal">NZD 0.00</span></div>
+      <div class="totals-row hidden" id="cart-delivery-row"><span class="totals-row__label">Delivery fee</span><span class="totals-row__value" id="cart-delivery">NZD 0.00</span></div>
+      <div class="totals-row totals-row--final"><span class="totals-row__label">Total</span><span class="totals-row__value" id="cart-total">NZD 0.00</span></div>
+    </div>
+    <button class="btn btn--primary btn--lg drawer-checkout-btn" id="proceed-checkout" style="margin:var(--space-4) var(--space-6);width:calc(100% - 2rem);">Proceed to Checkout</button>
+  </aside>
+
+  <!-- CHECKOUT DRAWER -->
+  <aside class="drawer checkout-drawer" id="checkout-drawer" role="dialog" aria-label="Checkout" aria-modal="true">
+    <header class="drawer__header">
+      <h3 class="drawer__title">Checkout</h3>
+      <button class="drawer__close" id="close-checkout" aria-label="Close checkout">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </header>
+    <div class="drawer__body checkout-form" id="checkout-form">
+      <div class="form-summary" id="checkout-summary"></div>
+
+      <form id="checkout-form-inner" novalidate>
+        <div class="field">
+          <label class="field__label" for="cf-name">Full name <span aria-hidden="true">*</span></label>
+          <input type="text" class="field__input" id="cf-name" name="name" required autocomplete="name" placeholder="Your name">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="cf-phone">Mobile number <span aria-hidden="true">*</span></label>
+          <input type="tel" class="field__input" id="cf-phone" name="phone" required autocomplete="tel" placeholder="021 123 4567">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="cf-email">Email <span aria-hidden="true">*</span></label>
+          <input type="email" class="field__input" id="cf-email" name="email" required autocomplete="email" placeholder="you@example.com">
+        </div>
+
+        <div class="field-group">
+          <p class="field__label">Order type <span aria-hidden="true">*</span></p>
+          <div class="toggle-group" role="radiogroup" aria-label="Order type">
+            <label class="toggle-option">
+              <input type="radio" name="order-type" value="takeaway" checked>
+              <span>Takeaway</span>
+            </label>
+            <label class="toggle-option">
+              <input type="radio" name="order-type" value="delivery">
+              <span>Delivery</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="address-fields hidden" id="address-fields" aria-label="Delivery address">
+          <div class="field">
+            <label class="field__label" for="cf-address1">Street address <span aria-hidden="true">*</span></label>
+            <input type="text" class="field__input" id="cf-address1" name="address1" autocomplete="street-address" placeholder="Street address">
+          </div>
+          <div class="field">
+            <label class="field__label" for="cf-address2">Apartment / Unit (optional)</label>
+            <input type="text" class="field__input" id="cf-address2" name="address2" autocomplete="address-line2" placeholder="Apartment, suite, floor">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field__label" for="cf-suburb">Suburb <span aria-hidden="true">*</span></label>
+              <input type="text" class="field__input" id="cf-suburb" name="suburb" autocomplete="address-level3" placeholder="Suburb">
+            </div>
+            <div class="field">
+              <label class="field__label" for="cf-city">City <span aria-hidden="true">*</span></label>
+              <input type="text" class="field__input" id="cf-city" name="city" value="Rotorua" autocomplete="address-level2" placeholder="City">
+            </div>
+          </div>
+          <div class="field">
+            <label class="field__label" for="cf-postcode">Postcode <span aria-hidden="true">*</span></label>
+            <input type="text" class="field__input" id="cf-postcode" name="postcode" autocomplete="postal-code" placeholder="Postcode">
+          </div>
+          <div class="field">
+            <label class="field__label" for="cf-delivery-notes">Delivery instructions</label>
+            <input type="text" class="field__input" id="cf-delivery-notes" name="deliveryNotes" placeholder="Gate code, floor, landmark...">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="cf-time">Preferred time</label>
+          <input type="text" class="field__input" id="cf-time" name="time" placeholder="e.g. ASAP or 7:00pm">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="cf-notes">Order notes (optional)</label>
+          <input type="text" class="field__input" id="cf-notes" name="notes" placeholder="Extra spicy, no onion...">
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="cf-terms" name="terms" required>
+          <label for="cf-terms">I agree to the <button type="button" class="inline-link" data-policy="terms">Terms &amp; Conditions</button> and <button type="button" class="inline-link" data-policy="refunds">Refunds Policy</button></label>
+        </div>
+
+        <p class="form-error" id="form-error" aria-live="assertive"></p>
+
+        <div class="checkout-actions">
+          <button type="button" class="btn btn--outline btn--lg" id="whatsapp-order-btn">Order on WhatsApp</button>
+          <button type="button" class="btn btn--primary btn--lg" id="cod-order-btn">Pay on Delivery / Pickup</button>
+        </div>
+        <p class="pay-note">Choose WhatsApp to confirm your order by chat, or Pay on Delivery/Pickup to send it straight to our kitchen — pay in cash or by card when it arrives or when you collect it. Online card payment is coming soon.</p>
+      </form>
+    </div>
+  </aside>
+
+  <!-- POLICY MODAL -->
+  <div class="policy-overlay" id="policy-overlay" role="dialog" aria-modal="true" aria-labelledby="policy-title" hidden>
+    <div class="policy-modal">
+      <header class="policy-modal__header">
+        <h3 class="policy-modal__title" id="policy-title">Policy</h3>
+        <button class="policy-modal__close" id="close-policy" aria-label="Close policy">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </header>
+      <div class="policy-modal__body" id="policy-content"></div>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+  <!-- SCRIPTS -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+
+  <!-- Config & Defaults -->
+  <script src="firebase-config.js"></script>
+  <script src="site-content-defaults.js?v2"></script>
+  <script src="icons.js?v1"></script>
+
+  <!-- Main App Script -->
+  <script src="script-upgraded.js?v1"></script>
+
+  <!-- Save customer details locally (optional enhancement) -->
+  <script>
+    // Auto-fill checkout form from localStorage
+    const FIELDS = ['cf-name','cf-phone','cf-email','cf-address1','cf-address2','cf-suburb','cf-city','cf-postcode','cf-delivery-notes'];
+    const STORAGE_KEY = 'chaya_saved_customer_details';
+
+    function saveDetails() {
+      const data = {};
+      FIELDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) data[id] = el.value;
+      });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    }
+
+    function loadDetails() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        FIELDS.forEach(id => {
+          const el = document.getElementById(id);
+          if (el && data[id]) el.value = data[id];
+        });
+      } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', loadDetails);
+    document.addEventListener('input', e => {
+      if (FIELDS.includes(e.target.id)) saveDetails();
+    });
+  </script>
+</body>
+</html>

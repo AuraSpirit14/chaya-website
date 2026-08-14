@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="The Chaya & Co. Admin — Manage orders, menu, and site content">
+  <meta name="theme-color" content="#1A241B">
+  <title>Admin | The Chaya & Co.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap"></noscript>
+
+  <!-- Main design system -->
+  <link rel="stylesheet" href="style-upgraded.css?v1">
+  <!-- Admin-specific styles -->
+  <link rel="stylesheet" href="admin-upgraded.css?v1">
+</head>
+<body class="admin-body">
+  <!-- Video Background (shared with customer site) -->
+  <div class="bg-video-overlay" aria-hidden="true">
+    <video class="bg-video" autoplay muted loop playsinline poster="./photos/bg.png" aria-hidden="true">
+      <source src="./photos/video.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <!-- LOGIN SCREEN -->
+  <main class="login-screen" id="login-screen" role="main">
+    <div class="login-card reveal">
+      <div class="login-header">
+        <div class="login-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+        </div>
+        <h1 class="login-title">Admin Dashboard</h1>
+        <p class="login-subtitle">Sign in to manage orders, menu, and site content</p>
+      </div>
+
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="login-email">Email</label>
+          <input type="email" class="field__input" id="login-email" name="email" required autocomplete="username" placeholder="admin@thechayaandco.nz">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="login-password">Password</label>
+          <input type="password" class="field__input" id="login-password" name="password" required autocomplete="current-password" placeholder="••••••••">
+        </div>
+
+        <p class="form-error" id="login-error" aria-live="assertive"></p>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--full" id="login-btn">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-loading hidden" aria-hidden="true">
+            <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="24"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
+          </span>
+        </button>
+      </form>
+
+      <p class="login-note">
+        Don't have a login yet? Create one in Firebase Console →
+        <br>Authentication → Users → Add user, using the email/password you want to log in with.
+      </p>
+
+      <div class="login-footer">
+        <a href="./index.html" class="btn btn--ghost btn--sm">← Back to Site</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ADMIN APP (hidden until logged in) -->
+  <div class="admin-app hidden" id="admin-app" role="application">
+    <!-- Inactivity Warning Banner -->
+    <div id="inactivity-warning-banner" class="inactivity-banner hidden" role="alert" aria-live="assertive"></div>
+
+    <!-- Header -->
+    <header class="admin-header" role="banner">
+      <div class="wrap admin-header-row">
+        <div class="admin-brand">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+            <path d="M12 6v6l4 2"/>
+          </svg>
+          <span>The Chaya &amp; Co. Admin</span>
+        </div>
+        <div class="admin-header-actions">
+          <span class="admin-user-email" id="admin-user-email"></span>
+          <button type="button" class="btn btn--outline btn--sm" id="logout-btn">Log Out</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="wrap">
+      <nav class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button class="admin-tab-btn active" data-tab="orders" role="tab" aria-selected="true" aria-controls="panel-orders">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true"><path d="M22 12h-4l-3-9L9 3l-3 9H2"/><path d="M5 12h14"/><path d="M12 22v-8"/></svg>
+          <span>Orders</span>
+          <span class="tab-badge hidden" id="orders-badge" aria-live="polite"></span>
+        </button>
+        <button class="admin-tab-btn" data-tab="menu" role="tab" aria-selected="false" aria-controls="panel-menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+          <span>Menu &amp; Stock</span>
+        </button>
+        <button class="admin-tab-btn" data-tab="site" role="tab" aria-selected="false" aria-controls="panel-site">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6"/><path d="M9 14h10"/></svg>
+          <span>Site Editor</span>
+        </button>
+      </nav>
+    </div>
+
+    <!-- ORDERS PANEL -->
+    <section class="wrap admin-panel" id="panel-orders" role="tabpanel" aria-labelledby="orders-tab">
+      <header class="admin-panel-head">
+        <h2>Orders</h2>
+        <p class="admin-panel-sub">Newest first. Update status as orders progress.</p>
+      </header>
+
+      <div class="orders-toolbar">
+        <div class="orders-filters">
+          <select class="field__input field__input--sm" id="filter-status" aria-label="Filter by status">
+            <option value="">All Statuses</option>
+            <option value="new">New</option>
+            <option value="accepted">Accepted</option>
+            <option value="preparing">Preparing</option>
+            <option value="ready">Ready</option>
+            <option value="out_for_delivery">Out for Delivery</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+            <option value="refunded">Refunded</option>
+          </select>
+          <select class="field__input field__input--sm" id="filter-payment" aria-label="Filter by payment status">
+            <option value="">All Payments</option>
+            <option value="cod">COD</option>
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+            <option value="failed">Failed</option>
+            <option value="refunded">Refunded</option>
+            <option value="partial_refund">Partial Refund</option>
+          </select>
+          <select class="field__input field__input--sm" id="filter-channel" aria-label="Filter by order channel">
+            <option value="">All Channels</option>
+            <option value="cod">Pay on Delivery/Pickup</option>
+            <option value="whatsapp">WhatsApp</option>
+          </select>
+        </div>
+        <div class="orders-search">
+          <label class="visually-hidden" for="search-orders">Search orders</label>
+          <div class="search-input-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" class="field__input" id="search-orders" placeholder="Search order #, name, phone…" aria-label="Search orders">
+          </div>
+        </div>
+      </div>
+
+      <div class="orders-list" id="orders-list" role="list" aria-label="Orders">
+        <!-- Populated by JS -->
+      </div>
+      <div class="admin-empty hidden" id="orders-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64" aria-hidden="true"><path d="M22 12h-4l-3-9L9 3l-3 9H2"/><path d="M5 12h14"/><path d="M12 22v-8"/></svg>
+        <h3>No orders yet</h3>
+        <p>They'll appear here as soon as a customer checks out.</p>
+      </div>
+    </section>
+
+    <!-- MENU & STOCK PANEL -->
+    <section class="wrap admin-panel hidden" id="panel-menu" role="tabpanel" aria-labelledby="menu-tab">
+      <header class="admin-panel-head">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:var(--space-4);">
+          <div>
+            <h2>Menu &amp; Stock</h2>
+            <p class="admin-panel-sub">Add items, update photos and prices, toggle stock. <strong>Sold Out</strong> shows as unavailable — <strong>Hide</strong> removes from customer site entirely.</p>
+          </div>
+          <button type="button" class="btn btn--primary" id="add-item-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Menu Item
+          </button>
+        </div>
+      </header>
+
+      <div class="menu-admin-list" id="menu-admin-list" role="list" aria-label="Menu items">
+        <!-- Populated by JS -->
+      </div>
+      <div class="admin-empty hidden" id="menu-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="64" height="64" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+        <h3>No menu items yet</h3>
+        <p>Click <strong>Add Menu Item</strong> to create your first one.</p>
+      </div>
+    </section>
+
+    <!-- SITE EDITOR PANEL -->
+    <section class="wrap admin-panel hidden" id="panel-site" role="tabpanel" aria-labelledby="site-tab">
+      <header class="admin-panel-head">
+        <h2>Site Editor</h2>
+        <p class="admin-panel-sub">Edit every section of your homepage — text, photos, colors, sizes, spacing, WhatsApp settings, and all four policy pages. Changes go live the moment you hit Save.</p>
+      </header>
+
+      <form id="site-editor-form" novalidate>
+        <!-- Theme & Colors -->
+        <details class="site-editor-group open">
+          <summary>Theme &amp; Colors</summary>
+          <div class="site-editor-body">
+            <div class="field">
+              <label class="field__label">Accent Color <span class="field-hint">Buttons, links, badges</span></label>
+              <input type="color" class="field__input" id="site-theme-accent" data-path="theme.accent">
+            </div>
+            <div class="field">
+              <label class="field__label">Dark Color <span class="field-hint">Buttons, headings, header bg</span></label>
+              <input type="color" class="field__input" id="site-theme-dark" data-path="theme.dark">
+            </div>
+            <div class="field">
+              <label class="field__label">Background Cream <span class="field-hint">Page background</span></label>
+              <input type="color" class="field__input" id="site-theme-cream" data-path="theme.cream">
+            </div>
+          </div>
+        </details>
+
+        <!-- Branding & Logo -->
+        <details class="site-editor-group">
+          <summary>Branding &amp; Logo</summary>
+          <div class="site-editor-body">
+            <div class="field">
+              <label class="field__label" for="site-branding-name">Brand Name <span class="field-hint">Shown next to logo in header</span></label>
+              <input type="text" class="field__input" id="site-branding-name" data-path="branding.brandName">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-branding-logoheight">Logo Height (px)</label>
+              <input type="number" class="field__input" id="site-branding-logoheight" data-path="branding.logoHeight" min="16" max="80" step="1">
+            </div>
+            <div class="field field-full">
+              <label class="field__label">Logo Image URL <span class="field-hint">Upload logo to your GitHub repo's photos folder first, then paste the raw link here. Leave blank for text only.</span></label>
+              <input type="text" class="field__input" id="site-branding-logo" data-path="branding.logoUrl" placeholder="https://raw.githubusercontent.com/yourname/repo/main/photos/logo.png">
+              <img id="site-branding-logo-preview" class="item-photo-preview hidden" alt="Logo preview">
+            </div>
+          </div>
+        </details>
+
+        <!-- Business Settings / WhatsApp -->
+        <details class="site-editor-group">
+          <summary>Business Settings &amp; WhatsApp</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-whatsapp-number">WhatsApp Number <span class="field-hint">Country code + number, no + or spaces (e.g. 64211234567)</span></label>
+              <input type="text" class="field__input" id="site-whatsapp-number" data-path="whatsapp.number">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-whatsapp-businessname">Business Name <span class="field-hint">Shown in WhatsApp order messages</span></label>
+              <input type="text" class="field__input" id="site-whatsapp-businessname" data-path="whatsapp.businessName">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-delivery-fee">Delivery Fee (NZD)</label>
+              <input type="number" class="field__input" id="site-delivery-fee" data-path="delivery.feeAmount" step="0.5" min="0">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-whatsapp-headerlabel">Header WhatsApp Button Text</label>
+              <input type="text" class="field__input" id="site-whatsapp-headerlabel" data-path="whatsapp.headerLabel">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-whatsapp-footerlabel">Footer WhatsApp Button Text</label>
+              <input type="text" class="field__input" id="site-whatsapp-footerlabel" data-path="whatsapp.footerLabel">
+            </div>
+          </div>
+        </details>
+
+        <!-- Announcement Bar -->
+        <details class="site-editor-group">
+          <summary>Announcement Bar</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-announcement-text">Banner Text</label>
+              <input type="text" class="field__input" id="site-announcement-text" data-path="announcement.text">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-announcement-bg">Background Color</label>
+              <input type="color" class="field__input" id="site-announcement-bg" data-path="announcement.bgColor">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-announcement-color">Text Color</label>
+              <input type="color" class="field__input" id="site-announcement-color" data-path="announcement.textColor">
+            </div>
+          </div>
+        </details>
+
+        <!-- Hero Section -->
+        <details class="site-editor-group open">
+          <summary>Hero Section (Top Banner)</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-hero-eyebrow">Small Label Above Headline</label>
+              <input type="text" class="field__input" id="site-hero-eyebrow" data-path="hero.eyebrow">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-hero-headline">Headline <span class="field-hint">Use a new line for a line break</span></label>
+              <textarea class="field__input" id="site-hero-headline" data-path="hero.headline" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-hero-copy">Description Text</label>
+              <textarea class="field__input" id="site-hero-copy" data-path="hero.copy" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-cta1">Button 1 Text</label>
+              <input type="text" class="field__input" id="site-hero-cta1" data-path="hero.cta1Text">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-cta2">Button 2 Text</label>
+              <input type="text" class="field__input" id="site-hero-cta2" data-path="hero.cta2Text">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-hero-image">Photo URL <span class="field-hint">Upload to GitHub photos folder, paste raw link</span></label>
+              <input type="text" class="field__input" id="site-hero-image" data-path="hero.image" placeholder="https://raw.githubusercontent.com/yourname/repo/main/photos/hero.png">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-image-width">Photo Width (px)</label>
+              <input type="number" class="field__input" id="site-hero-image-width" data-path="hero.imageWidth" min="80" max="800">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-image-shape">Photo Shape</label>
+              <select class="field__input" id="site-hero-image-shape" data-path="hero.imageShape">
+                <option value="square">Square Corners</option>
+                <option value="rounded">Rounded Corners</option>
+                <option value="circle">Circle</option>
+                <option value="pill">Pill</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-headline-size">Headline Size (px)</label>
+              <input type="number" class="field__input" id="site-hero-headline-size" data-path="hero.headlineSize" min="20" max="90">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-body-size">Body Text Size (px)</label>
+              <input type="number" class="field__input" id="site-hero-body-size" data-path="hero.bodySize" min="12" max="28">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-hero-padding">Section Spacing</label>
+              <select class="field__input" id="site-hero-padding" data-path="hero.padding">
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <!-- Bestsellers Strip -->
+        <details class="site-editor-group">
+          <summary>Bestsellers Strip</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-signature-eyebrow">Small Label</label>
+              <input type="text" class="field__input" id="site-signature-eyebrow" data-path="signature.eyebrow">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-signature-padding">Section Spacing</label>
+              <select class="field__input" id="site-signature-padding" data-path="signature.padding">
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </div>
+            <div class="signature-card-fields">
+              <p class="card-label">Card 1 <span class="field-hint">Name must match a real Menu &amp; Stock item exactly for the Add button to work</span></p>
+              <div class="field field-full">
+                <label class="field__label" for="site-sig-1-image">Photo URL</label>
+                <input type="text" class="field__input" id="site-sig-1-image" data-path="signature.cards.0.image" placeholder="https://raw.githubusercontent.com/.../panipuri.png">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-1-name">Name</label>
+                <input type="text" class="field__input" id="site-sig-1-name" data-path="signature.cards.0.name">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-1-price">Price</label>
+                <input type="text" class="field__input" id="site-sig-1-price" data-path="signature.cards.0.price">
+              </div>
+            </div>
+            <div class="signature-card-fields">
+              <p class="card-label">Card 2</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-sig-2-image">Photo URL</label>
+                <input type="text" class="field__input" id="site-sig-2-image" data-path="signature.cards.1.image">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-2-name">Name</label>
+                <input type="text" class="field__input" id="site-sig-2-name" data-path="signature.cards.1.name">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-2-price">Price</label>
+                <input type="text" class="field__input" id="site-sig-2-price" data-path="signature.cards.1.price">
+              </div>
+            </div>
+            <div class="signature-card-fields">
+              <p class="card-label">Card 3</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-sig-3-image">Photo URL</label>
+                <input type="text" class="field__input" id="site-sig-3-image" data-path="signature.cards.2.image">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-3-name">Name</label>
+                <input type="text" class="field__input" id="site-sig-3-name" data-path="signature.cards.2.name">
+              </div>
+              <div class="field">
+                <label class="field__label" for="site-sig-3-price">Price</label>
+                <input type="text" class="field__input" id="site-sig-3-price" data-path="signature.cards.2.price">
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Menu Section -->
+        <details class="site-editor-group">
+          <summary>Menu Section (Above Food List)</summary>
+          <div class="site-editor-body">
+            <div class="field">
+              <label class="field__label" for="site-menu-eyebrow">Small Label</label>
+              <input type="text" class="field__input" id="site-menu-eyebrow" data-path="menuSection.eyebrow">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-menu-title">Title</label>
+              <input type="text" class="field__input" id="site-menu-title" data-path="menuSection.title">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-menu-quote">Quote Line</label>
+              <textarea class="field__input" id="site-menu-quote" data-path="menuSection.quote" rows="2" style="min-height:60px;"></textarea>
+            </div>
+          </div>
+        </details>
+
+        <!-- Our Story Section -->
+        <details class="site-editor-group">
+          <summary>Our Story Section</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-story-eyebrow">Small Label</label>
+              <input type="text" class="field__input" id="site-story-eyebrow" data-path="story.eyebrow">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-story-headline">Headline</label>
+              <input type="text" class="field__input" id="site-story-headline" data-path="story.headline">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-story-para1">Paragraph 1</label>
+              <textarea class="field__input" id="site-story-para1" data-path="story.paragraph1" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-story-para2">Paragraph 2</label>
+              <textarea class="field__input" id="site-story-para2" data-path="story.paragraph2" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-story-image">Photo URL</label>
+              <input type="text" class="field__input" id="site-story-image" data-path="story.image" placeholder="https://raw.githubusercontent.com/.../ourstory.png">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-story-image-shape">Photo Shape</label>
+              <select class="field__input" id="site-story-image-shape" data-path="story.imageShape">
+                <option value="square">Square Corners</option>
+                <option value="rounded">Rounded Corners</option>
+                <option value="circle">Circle</option>
+                <option value="pill">Pill</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-story-headline-size">Headline Size (px)</label>
+              <input type="number" class="field__input" id="site-story-headline-size" data-path="story.headlineSize" min="18" max="60">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-story-padding">Section Spacing</label>
+              <select class="field__input" id="site-story-padding" data-path="story.padding">
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </div>
+          </div>
+        </details>
+
+        <!-- Delivery & Takeaway Section -->
+        <details class="site-editor-group">
+          <summary>Delivery &amp; Takeaway Section</summary>
+          <div class="site-editor-body">
+            <div class="field">
+              <label class="field__label" for="site-delivery-eyebrow">Small Label</label>
+              <input type="text" class="field__input" id="site-delivery-eyebrow" data-path="delivery.eyebrow">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-delivery-title">Title</label>
+              <input type="text" class="field__input" id="site-delivery-title" data-path="delivery.title">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-delivery-padding">Section Spacing</label>
+              <select class="field__input" id="site-delivery-padding" data-path="delivery.padding">
+                <option value="compact">Compact</option>
+                <option value="normal">Normal</option>
+                <option value="spacious">Spacious</option>
+              </select>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card1-title">Card 1 Title</label>
+              <input type="text" class="field__input" id="site-delivery-card1-title" data-path="delivery.card1Title">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card1-text">Card 1 Text</label>
+              <textarea class="field__input" id="site-delivery-card1-text" data-path="delivery.card1Text" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card2-title">Card 2 Title</label>
+              <input type="text" class="field__input" id="site-delivery-card2-title" data-path="delivery.card2Title">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card2-text">Card 2 Text</label>
+              <textarea class="field__input" id="site-delivery-card2-text" data-path="delivery.card2Text" rows="3" style="min-height:80px;"></textarea>
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card3-title">Card 3 Title</label>
+              <input type="text" class="field__input" id="site-delivery-card3-title" data-path="delivery.card3Title">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-delivery-card3-text">Card 3 Text <span class="field-hint">New line = new line</span></label>
+              <textarea class="field__input" id="site-delivery-card3-text" data-path="delivery.card3Text" rows="3" style="min-height:80px;"></textarea>
+            </div>
+          </div>
+        </details>
+
+        <!-- Find Us Section -->
+        <details class="site-editor-group">
+          <summary>Find Us Section</summary>
+          <div class="site-editor-body">
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-eyebrow">Small Label</label>
+              <input type="text" class="field__input" id="site-findus-eyebrow" data-path="findUs.eyebrow">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-headline">Headline</label>
+              <input type="text" class="field__input" id="site-findus-headline" data-path="findUs.headline">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-line1">Address Line</label>
+              <input type="text" class="field__input" id="site-findus-line1" data-path="findUs.line1">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-line2">Hours Line</label>
+              <input type="text" class="field__input" id="site-findus-line2" data-path="findUs.line2">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-line3">Phone / Email Line</label>
+              <input type="text" class="field__input" id="site-findus-line3" data-path="findUs.line3">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-map-image">Map Photo URL</label>
+              <input type="text" class="field__input" id="site-findus-map-image" data-path="findUs.mapImage" placeholder="https://raw.githubusercontent.com/.../map.png">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-findus-map-link">Google Maps Link <span class="field-hint">Opens when photo is tapped</span></label>
+              <input type="text" class="field__input" id="site-findus-map-link" data-path="findUs.mapLink">
+            </div>
+          </div>
+        </details>
+
+        <!-- Footer -->
+        <details class="site-editor-group">
+          <summary>Footer</summary>
+          <div class="site-editor-body">
+            <div class="field">
+              <label class="field__label" for="site-footer-brand">Brand Name</label>
+              <input type="text" class="field__input" id="site-footer-brand" data-path="footer.brand">
+            </div>
+            <div class="field">
+              <label class="field__label" for="site-footer-tagline">Tagline</label>
+              <input type="text" class="field__input" id="site-footer-tagline" data-path="footer.tagline">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-footer-address">Address</label>
+              <input type="text" class="field__input" id="site-footer-address" data-path="footer.address">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-footer-contact">Contact Line</label>
+              <input type="text" class="field__input" id="site-footer-contact" data-path="footer.contact">
+            </div>
+            <div class="field field-full">
+              <label class="field__label" for="site-footer-copyright">Copyright Line</label>
+              <input type="text" class="field__input" id="site-footer-copyright" data-path="footer.copyright">
+            </div>
+          </div>
+        </details>
+
+        <!-- Policy Pages -->
+        <details class="site-editor-group">
+          <summary>Policy Pages</summary>
+          <div class="site-editor-body">
+            <div class="policy-fields">
+              <p class="card-label">Delivery Policy</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-delivery-title">Title</label>
+                <input type="text" class="field__input" id="site-policy-delivery-title" data-path="policies.delivery.title">
+              </div>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-delivery-body">Text <span class="field-hint">Each new line becomes its own paragraph</span></label>
+                <textarea class="field__input policy-body" id="site-policy-delivery-body" data-path="policies.delivery.body" rows="6" style="min-height:130px;"></textarea>
+              </div>
+            </div>
+            <div class="policy-fields">
+              <p class="card-label">Refunds &amp; Cancellations</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-refunds-title">Title</label>
+                <input type="text" class="field__input" id="site-policy-refunds-title" data-path="policies.refunds.title">
+              </div>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-refunds-body">Text</label>
+                <textarea class="field__input policy-body" id="site-policy-refunds-body" data-path="policies.refunds.body" rows="6" style="min-height:130px;"></textarea>
+              </div>
+            </div>
+            <div class="policy-fields">
+              <p class="card-label">Privacy Policy</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-privacy-title">Title</label>
+                <input type="text" class="field__input" id="site-policy-privacy-title" data-path="policies.privacy.title">
+              </div>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-privacy-body">Text</label>
+                <textarea class="field__input policy-body" id="site-policy-privacy-body" data-path="policies.privacy.body" rows="6" style="min-height:130px;"></textarea>
+              </div>
+            </div>
+            <div class="policy-fields">
+              <p class="card-label">Terms &amp; Conditions</p>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-terms-title">Title</label>
+                <input type="text" class="field__input" id="site-policy-terms-title" data-path="policies.terms.title">
+              </div>
+              <div class="field field-full">
+                <label class="field__label" for="site-policy-terms-body">Text</label>
+                <textarea class="field__input policy-body" id="site-policy-terms-body" data-path="policies.terms.body" rows="6" style="min-height:130px;"></textarea>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Save Bar -->
+        <div class="site-save-bar">
+          <button type="submit" class="btn btn--primary btn--lg" id="save-site-btn">
+            <span class="btn-text">Save Changes</span>
+            <span class="btn-loading hidden" aria-hidden="true">
+              <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="24"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+          <span id="site-save-status" class="site-save-status"></span>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- ITEM EDIT MODAL -->
+  <div class="policy-overlay hidden" id="item-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="item-modal-title">
+    <div class="policy-modal item-modal">
+      <header class="policy-modal__header">
+        <h3 class="policy-modal__title" id="item-modal-title">Add Menu Item</h3>
+        <button class="policy-modal__close" id="close-item-modal" aria-label="Close modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </header>
+
+      <form id="item-form" novalidate>
+        <div class="field">
+          <label class="field__label" for="item-name">Name <span aria-hidden="true">*</span></label>
+          <input type="text" class="field__input" id="item-name" required placeholder="e.g. Classic Pani Puri">
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="item-desc">Description</label>
+          <input type="text" class="field__input" id="item-desc" placeholder="Crisp puris, spiced potato, tangy masala pani">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="item-price">Price (NZD) <span aria-hidden="true">*</span></label>
+            <input type="number" class="field__input" id="item-price" step="0.01" min="0" required placeholder="8.00">
+          </div>
+          <div class="field">
+            <label class="field__label" for="item-category">Category</label>
+            <select class="field__input" id="item-category">
+              <option value="Pani Puri">Pani Puri</option>
+              <option value="Chaat">Chaat</option>
+              <option value="Beverages">Beverages</option>
+              <option value="Combos">Combos</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="item-tags">Tags (comma separated)</label>
+          <input type="text" class="field__input" id="item-tags" placeholder="Bestseller, Vegetarian">
+        </div>
+
+        <div class="field field-full">
+          <label class="field__label" for="item-photo-url">Photo URL <span class="field-hint">Upload to GitHub photos folder first, then paste raw link</span></label>
+          <input type="text" class="field__input" id="item-photo-url" placeholder="https://raw.githubusercontent.com/yourname/repo/main/photos/panipuri.png">
+          <img id="item-photo-preview" class="item-photo-preview hidden" alt="Photo preview">
+        </div>
+
+        <div class="toggle-option item-instock-row">
+          <input type="checkbox" id="item-instock" checked>
+          <label for="item-instock">In stock (uncheck to mark <strong>Sold Out</strong> — still visible on menu)</label>
+        </div>
+
+        <div class="toggle-option item-hidden-row">
+          <input type="checkbox" id="item-hidden">
+          <label for="item-hidden">Hide from website (item stays saved here, but customers won't see it at all)</label>
+        </div>
+
+        <p class="form-error" id="item-modal-error" aria-live="assertive"></p>
+
+        <div class="checkout-actions">
+          <button type="button" class="btn btn--outline btn--lg" id="delete-item-btn" hidden>Delete Item</button>
+          <button type="submit" class="btn btn--primary btn--lg">
+            <span class="btn-text">Save Item</span>
+            <span class="btn-loading hidden" aria-hidden="true">
+              <svg class="spinner" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="24"><circle cx="12" cy="12" r="10" stroke-opacity="0.25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-storage-compat.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="site-content-defaults.js?v2"></script>
+  <script src="icons.js?v1"></script>
+
+  <script src="admin-upgraded.js?v1"></script>
+</body>
+</html>

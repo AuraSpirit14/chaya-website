@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Track your order from The Chaya & Co. — Artisanal Indian street food made fresh to order.">
+  <meta name="theme-color" content="#FDF9F3">
+  <title>Track Your Order | The Chaya & Co.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Jost:wght@400;500;600&display=swap"></noscript>
+
+  <link rel="stylesheet" href="style-upgraded.css?v1">
+  <link rel="stylesheet" href="style.css?v5">
+</head>
+<body>
+  <div class="bg-video-overlay" aria-hidden="true">
+    <video class="bg-video" autoplay muted loop playsinline poster="./photos/bg.png" aria-hidden="true">
+      <source src="./photos/video.mp4" type="video/mp4">
+    </video>
+  </div>
+
+  <main class="status-page">
+    <div class="wrap">
+      <!-- Lookup Form (shown when no order ID in URL) -->
+      <div class="lookup-form reveal" id="lookup-card" role="region" aria-label="Order lookup">
+        <div style="max-width:400px;margin:0 auto;text-align:center;">
+          <div style="width:80px;height:80px;margin:0 auto var(--space-6);background:var(--color-primary-light);border-radius:var(--radius-circle);display:flex;align-items:center;justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--color-primary)" stroke-width="2" width="36" height="36"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h1 class="status-page__title" style="margin-bottom:var(--space-2);">Track Your Order</h1>
+          <p class="status-page__subtitle" style="margin-bottom:var(--space-8);">Enter your order number to see live status updates.</p>
+
+          <form id="lookup-form" onsubmit="return false;">
+            <label for="lookup-input" class="visually-hidden">Order number</label>
+            <input type="text" class="lookup-form__input" id="lookup-input" placeholder="e.g. PC-1023-AB12" autocomplete="off" spellcheck="false" aria-describedby="lookup-error">
+            <p class="lookup-form__error" id="lookup-error" aria-live="assertive"></p>
+            <button type="button" class="btn btn--primary btn--lg btn--full" id="lookup-btn">Track Order</button>
+          </form>
+
+          <p style="margin-top:var(--space-6);font-size:var(--text-sm);color:var(--color-text-muted);">Don't have an order number? <a href="./index.html" style="color:var(--color-primary);font-weight:600;">Place an order</a></p>
+        </div>
+      </div>
+
+      <!-- Status Card (shown when tracking an order) -->
+      <article class="status-card reveal hidden" id="status-card" aria-live="polite">
+        <header class="status-card__header">
+          <p class="eyebrow" style="color:var(--brand-gold-light);margin-bottom:var(--space-1);">Live Order Tracking</p>
+          <p class="status-card__order-id" id="order-id-display">#PC-1023-AB12</p>
+        </header>
+
+        <div class="status-card__body">
+          <!-- Progress Steps -->
+          <div class="progress-steps" id="steps-list" role="list" aria-label="Order progress">
+            <!-- Populated by JS -->
+          </div>
+
+          <!-- Order Details -->
+          <div class="status-card__details" id="order-details">
+            <!-- Populated by JS -->
+          </div>
+
+          <div style="margin-top:var(--space-6);padding-top:var(--space-6);border-top:1px solid var(--color-border);text-align:center;">
+            <p style="font-size:var(--text-sm);color:var(--color-text-muted);margin-bottom:var(--space-3);">This page updates automatically — no need to refresh.</p>
+            <button type="button" class="btn btn--outline" id="track-another-btn">Track Another Order</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- TOAST CONTAINER -->
+  <div class="toast-container" id="toast-container" aria-live="polite" aria-label="Notifications"></div>
+
+  <!-- SCRIPTS -->
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-auth-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="site-content-defaults.js?v2"></script>
+  <script src="icons.js?v1"></script>
+
+  <script>
+  // ==========================================================================
+  // ORDER STATUS TRACKING — UPGRADED
+  // ==========================================================================
+
+  const STATUS_STEPS = [
+    { key: "new", label: "Order Received", note: "We've got your order — it'll go into the kitchen shortly." },
+    { key: "preparing", label: "Preparing", note: "Your food is being made fresh right now." },
+    { key: "ready", label: "Ready for Pickup / Out for Delivery", note: "Your order is ready! If it's Delivery, it's on its way. If it's Takeaway, come on by." },
+    { key: "delivered", label: "Completed", note: "This order is complete. Thanks for ordering from us!" },
+  ];
+
+  const STATUS_STEP_MAP = {
+    new: "new",
+    accepted: "new",
+    preparing: "preparing",
+    ready: "ready",
+    out_for_delivery: "ready",
+    delivered: "delivered",
+  };
+
+  const STATUS_NOTES = {
+    new: "We've got your order — it'll go into the kitchen shortly.",
+    accepted: "We've accepted your order — it'll go into the kitchen shortly.",
+    preparing: "Your food is being made fresh right now.",
+    ready: "Your order is ready! If it's Delivery, it's on its way. If it's Takeaway, come on by.",
+    out_for_delivery: "Your order is on its way to you!",
+    delivered: "This order is complete. Thanks for ordering from us!",
+    cancelled: "This order has been cancelled. If you have questions, please contact us.",
+    refunded: "This order has been refunded. If you have questions, please contact us.",
+  };
+
+  function icon(name, size = 16) {
+    const paths = ICONS[name] || "";
+    return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+  }
+
+  function fmt(n) { return Number(n || 0).toFixed(2); }
+
+  const lookupCard = document.getElementById("lookup-card");
+  const statusCard = document.getElementById("status-card");
+  let currentUnsubscribe = null;
+
+  function getParam(name) {
+    return new URLSearchParams(window.location.search).get(name);
+  }
+
+  function showLookup(errorMsg) {
+    statusCard.classList.add("hidden");
+    lookupCard.classList.remove("hidden");
+    document.getElementById("lookup-error").textContent = errorMsg || "";
+    document.getElementById("lookup-input").value = "";
+    document.getElementById("lookup-input").focus();
+  }
+
+  function showStatusCard() {
+    lookupCard.classList.add("hidden");
+    statusCard.classList.remove("hidden");
+    statusCard.querySelectorAll(".reveal").forEach((el, i) => {
+      el.style.animationDelay = `${i * 100}ms`;
+      el.classList.add("reveal--visible");
+    });
+  }
+
+  function renderOrder(order) {
+    showStatusCard();
+    document.getElementById("order-id-display").textContent = "#" + order.orderId;
+
+    const status = order.status || "new";
+    const stepsList = document.getElementById("steps-list");
+
+    // Handle cancelled/refunded as special cases
+    if (status === "cancelled" || status === "refunded") {
+      const color = status === "cancelled" ? "#C0392B" : "#6B6455";
+      const label = status === "cancelled" ? "Order Cancelled" : "Order Refunded";
+      const note = STATUS_NOTES[status];
+
+      stepsList.innerHTML = `
+        <div class="progress-step" style="justify-content:center;">
+          <div class="progress-step__icon" style="width:48px;height:48px;background:${color};border-color:${color};color:white;">
+            ${status === "cancelled" ? icon("check", 24).replace('stroke="currentColor"', 'stroke="white"') : icon("receipt", 24).replace('stroke="currentColor"', 'stroke="white"')}
+          </div>
+          <div class="progress-step__content" style="text-align:center;">
+            <div class="progress-step__label" style="color:${color};font-size:var(--text-xl);">${label}</div>
+            <div class="progress-step__note" style="margin-top:var(--space-2);">${note}</div>
+          </div>
+        </div>
+      `;
+      document.getElementById("order-details").innerHTML = "";
+      return;
+    }
+
+    const mappedKey = STATUS_STEP_MAP[status] || "new";
+    const currentIndex = STATUS_STEPS.findIndex(s => s.key === mappedKey);
+
+    stepsList.innerHTML = STATUS_STEPS.map((step, i) => {
+      let cls = "";
+      if (i < currentIndex) cls = "progress-step--done";
+      else if (i === currentIndex) cls = "progress-step--active";
+
+      const stepIcon = step.key === "new" ? "receipt" :
+                       step.key === "preparing" ? "bag" :
+                       step.key === "ready" ? "check" : "bag";
+
+      return `
+        <li class="progress-step ${cls}" role="listitem" aria-current="${i === currentIndex ? "step" : "false"}">
+          <div class="progress-step__icon">
+            ${icon(stepIcon, 18)}
+          </div>
+          <div class="progress-step__content">
+            <div class="progress-step__label">${step.label}</div>
+            <div class="progress-step__note">${STATUS_NOTES[step.key] || ""}</div>
+          </div>
+        </li>
+      `;
+    }).join("");
+
+    // Order details
+    const addressLine = order.address
+      ? `${order.address.line1}${order.address.line2 ? ", " + order.address.line2 : ""}, ${order.address.suburb}, ${order.address.city} ${order.address.postcode}${order.address.notes ? "\nNotes: " + order.address.notes : ""}`
+      : "Pickup at 44 Cuba Street, Te Aro, Rotorua";
+
+    const itemsHtml = (order.items || []).map(i =>
+      `${i.qty}× ${i.name} — NZD ${fmt(i.price * i.qty)}`
+    ).join("<br>");
+
+    document.getElementById("order-details").innerHTML = `
+      <div class="detail-row"><span class="detail-row__label">${icon("clock", 14)} Order Type</span><span class="detail-row__value"><strong>${order.type}</strong></span></div>
+      <div class="detail-row"><span class="detail-row__label">${icon("clock", 14)} Requested Time</span><span class="detail-row__value"><strong>${order.time || "ASAP"}</strong></span></div>
+      ${order.type === "Delivery" ? `<div class="detail-row"><span class="detail-row__label">${icon("pin", 14)} Delivery To</span><span class="detail-row__value" style="white-space:pre-line;text-align:right;">${addressLine}</span></div>` : ""}
+      <div class="detail-row"><span class="detail-row__label">${icon("receipt", 14)} Items</span><span class="detail-row__value" style="white-space:pre-line;text-align:right;">${itemsHtml}</span></div>
+      <div class="detail-row" style="border-top:1px solid var(--color-border);margin-top:var(--space-3);padding-top:var(--space-3);"><span class="detail-row__label">${icon("card", 14)} Payment</span><span class="detail-row__value"><strong>${order.paymentMethod || "Pay on " + order.type.toLowerCase()}</strong></span></div>
+      <div class="detail-row"><span class="detail-row__label">${icon("person", 14)} Customer</span><span class="detail-row__value">${order.name}</span></div>
+      <div class="detail-row"><span class="detail-row__label">${icon("phone", 14)} Phone</span><span class="detail-row__value"><a href="tel:${order.phone}">${order.phone}</a></span></div>
+      <div class="detail-row"><span class="detail-row__label">${icon("mail", 14)} Email</span><span class="detail-row__value"><a href="mailto:${order.email}">${order.email}</a></span></div>
+      ${order.notes ? `<div class="detail-row"><span class="detail-row__label">${icon("receipt", 14)} Notes</span><span class="detail-row__value" style="white-space:pre-line;text-align:right;">${order.notes}</span></div>` : ""}
+      <div class="detail-row" style="border-top:1px solid var(--color-border);margin-top:var(--space-3);padding-top:var(--space-3);font-size:var(--text-lg);"><span class="detail-row__label"><strong>Total</strong></span><span class="detail-row__value"><strong>NZD ${fmt(order.total)}</strong></span></div>
+    `;
+  }
+
+  function trackOrder(orderId) {
+    if (currentUnsubscribe) {
+      currentUnsubscribe();
+      currentUnsubscribe = null;
+    }
+
+    document.getElementById("lookup-input").value = orderId;
+
+    if (typeof DEMO_MODE !== "undefined" && DEMO_MODE) {
+      showLookup("Firebase isn't connected yet — order tracking needs firebase-config.js set up first.");
+      return;
+    }
+
+    try {
+      currentUnsubscribe = db
+        .collection("orders")
+        .where("orderId", "==", orderId)
+        .limit(1)
+        .onSnapshot(
+          (snap) => {
+            if (snap.empty) {
+              showLookup(`We couldn't find an order with number <strong>${orderId}</strong>. Please check and try again.`);
+              return;
+            }
+            renderOrder(snap.docs[0].data());
+          },
+          (err) => {
+            console.error("Order tracking error:", err);
+            showLookup("Something went wrong looking up your order. Please try again.");
+          }
+        );
+    } catch (err) {
+      console.error("Couldn't start order tracking:", err);
+      showLookup("Something went wrong connecting to order tracking. Please refresh and try again.");
+    }
+  }
+
+  // Lookup form handler
+  document.getElementById("lookup-btn")?.addEventListener("click", () => {
+    const value = document.getElementById("lookup-input").value.trim();
+    if (!value) {
+      document.getElementById("lookup-error").textContent = "Please enter your order number.";
+      return;
+    }
+    const params = new URLSearchParams(window.location.search);
+    params.set("order", value);
+    window.history.replaceState(null, "", "status.html?" + params.toString());
+    trackOrder(value);
+  });
+
+  document.getElementById("lookup-input")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") document.getElementById("lookup-btn").click();
+  });
+
+  // Track another order button
+  document.getElementById("track-another-btn")?.addEventListener("click", () => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete("order");
+    window.history.replaceState(null, "", "status.html");
+    showLookup("");
+  });
+
+  // INIT
+  document.addEventListener("DOMContentLoaded", () => {
+    // Scroll reveal for status page
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      document.querySelectorAll(".reveal").forEach(el => el.classList.add("reveal--visible"));
+    } else {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal--visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+    }
+
+    const initialOrderId = getParam("order");
+    if (initialOrderId) {
+      trackOrder(initialOrderId);
+    } else {
+      showLookup("");
+    }
+  });
+  </script>
+</body>
+</html>
