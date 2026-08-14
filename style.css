@@ -1335,3 +1335,31 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
   body { background: white; color: black; }
   .card, .menu-card { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
 }
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #faf7f0;
+  color: #1d2a1d;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Prevent the homepage from collapsing if a parent layout rule fails */
+main,
+#app,
+.site-shell,
+.page-wrapper {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* Ensure images do not create unexpected inline gaps */
+img {
+  display: block;
+  max-width: 100%;
+}
